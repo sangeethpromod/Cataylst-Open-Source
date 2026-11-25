@@ -1,0 +1,17 @@
+# secrets and local config
+.env
+.env.*
+!.env.example
+# build output
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+*.exe
+*.zip
+tmp/
+bootstrap
+build-errors.log
+# real bank messages and statements: never commit
+messages.txt
+*.statement.txt

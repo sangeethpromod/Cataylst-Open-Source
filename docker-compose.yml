@@ -1,0 +1,42 @@
+# One command to run everything: docker compose up --build
+# Needs a .env (copy .env.example) with ME_SECRET, ME_HOLDER and GEMINI_API_KEY. The database runs in the stack.
+services:
+  mongo:
+    image: mongo:7
+    # a replica set of one: the backend watches a change stream, which needs it
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}).ok }"]
+      interval: 5s
+      retries: 20
+    volumes: [mongo-data:/data/db]
+
+  api: # receives bank SMS (POST /raw-transactions)
+    build: ./ledger-api
+    env_file: .env
+    environment:
+      ME_MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      PORT: "8080"
+    depends_on: { mongo: { condition: service_healthy } }
+    ports: ["8080:8080"]
+
+  backend: # parses messages and serves the app's API
+    build: ./ledger-backend
+    env_file: .env
+    environment:
+      ME_MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+      PORT: "8081"
+    depends_on: { mongo: { condition: service_healthy } }
+    ports: ["8081:8081"]
+
+  web:
+    build: ./finance-frontend
+    environment:
+      API_BASE_URL: http://backend:8081/finance/api
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-to-a-long-random-string}
+      USERS: '[{"name":"me","pin":"1234","api_secret":"${ME_SECRET}"}]'  # sign in as me / 1234; change the PIN
+    depends_on: [backend]
+    ports: ["3000:3000"]
+
+volumes:
+  mongo-data:

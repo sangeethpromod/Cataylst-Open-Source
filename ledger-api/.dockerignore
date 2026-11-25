@@ -1,0 +1,5 @@
+.env*
+!.env.example
+*.exe
+tmp
+.git

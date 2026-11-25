@@ -1,0 +1,7 @@
+# Fake bank SMS for trying the parser. Send one with:
+#   curl -X POST http://localhost:8080/raw-transactions -H "X-API-Key: $ME_SECRET" -H "Content-Type: application/json" -d '{"message":"<paste a line>"}'
+
+Federal Bank: Debited Rs 125.71 from a/c X1234 on 26Oct26 10:52 via UPI to shop@okbank. Ref 100000000001. Bal Rs 9635.93. Not you? Call 1800XXXXXXX
+Federal Bank: Dear Customer, Rs.8500 credited to your A/c XX1234 on 26OCT2026 10:24:02. BAL-Rs.9828.01
+HDFC Bank: Sent Rs.1000.00 From HDFC Bank A/C *5678 To JOHN SMITH On 22/10/26 Ref 100000000002 Not You? Call 1800XXXXXXX
+HDFC Bank: Credit Alert! Rs.265.00 credited to HDFC Bank A/c XX5678 on 26-10-26 from VPA friend@oksbi (UPI 100000000003)

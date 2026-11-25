@@ -1,0 +1,21 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: stable }
+      - run: go vet ./... && go test ./...
+        working-directory: ledger-backend
+      - run: go vet ./... && go test ./...
+        working-directory: ledger-api
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: finance-frontend/package-lock.json }
+      - run: npm ci && npx tsc --noEmit && npm run lint
+        working-directory: finance-frontend
